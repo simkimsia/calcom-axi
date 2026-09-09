@@ -29,6 +29,23 @@ describe("renderEventTypes", () => {
     expect(out).toContain("calcom-axi slots --event-type-id <id>");
   });
 
+  it("shortens long titles with a size hint unless --full", () => {
+    const long = [
+      {
+        id: 1,
+        slug: "x",
+        title: "L".repeat(75),
+        lengthInMinutes: 5,
+        hidden: false,
+      },
+    ];
+    const out = renderEventTypes(long);
+    expect(out).toContain(`${"L".repeat(60)}… (75 chars)`);
+    expect(out).toContain("calcom-axi event-types --full");
+    expect(renderEventTypes(long, undefined, true)).toContain("L".repeat(75));
+    expect(renderEventTypes(fixture)).not.toContain("--full");
+  });
+
   it("names the user when listing someone else's", () => {
     expect(renderEventTypes(fixture, "jane")).toContain("event types for jane");
   });

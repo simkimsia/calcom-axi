@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compactIso, relativeTime, truncate } from "../src/toon.js";
+import { compactIso, relativeTime, truncate, Truncator } from "../src/toon.js";
 
 describe("compactIso", () => {
   it("trims to minute precision in UTC", () => {
@@ -26,9 +26,27 @@ describe("relativeTime", () => {
   });
 });
 
-describe("truncate", () => {
-  it("collapses newlines and caps length", () => {
+describe("truncate / Truncator", () => {
+  it("collapses newlines and appends the original size when cutting", () => {
     expect(truncate("a\nb", 10)).toBe("a ⏎ b");
-    expect(truncate("x".repeat(20), 5)).toBe("xxxx…");
+    expect(truncate("x".repeat(20), 5)).toBe("xxxxx… (20 chars)");
+  });
+
+  it("counts cuts and produces exactly one --full hint", () => {
+    const t = new Truncator();
+    t.cut("short", 10);
+    t.cut("y".repeat(11), 10);
+    t.cut("z".repeat(12), 10);
+    expect(t.count).toBe(2);
+    expect(t.hint("bookings")).toEqual([
+      "2 values shortened; run `calcom-axi bookings --full` for complete text",
+    ]);
+    expect(new Truncator().hint("bookings")).toEqual([]);
+  });
+
+  it("passes everything through under full", () => {
+    const t = new Truncator(true);
+    expect(t.cut("y".repeat(11), 10)).toBe("y".repeat(11));
+    expect(t.count).toBe(0);
   });
 });

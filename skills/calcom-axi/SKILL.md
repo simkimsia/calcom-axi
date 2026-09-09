@@ -46,7 +46,8 @@ Today's surface is read-only: `whoami`, `agenda` (upcoming bookings),
 `bookings` (filter by status, date range, attendee, event type; paged),
 `booking <uid>` (hosts, attendees, meeting link), `event-types`, `schedules`
 (with an hours summary), `slots` (free start times for one event type in a
-date range). Times are UTC ISO unless `slots --timezone` is given.
+date range). List commands shorten long titles with a size hint; pass
+`--full` for complete text. Times are UTC ISO unless `slots --timezone` is given.
 
 ## When calcom-axi cannot do it
 

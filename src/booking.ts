@@ -1,4 +1,4 @@
-import { compactIso, truncate } from "./toon.js";
+import { compactIso, Truncator } from "./toon.js";
 
 /** Subset of the v2024-08-13 booking object that the tables use. */
 export interface CalcomAttendee {
@@ -23,25 +23,34 @@ export interface CalcomBooking {
   [key: string]: unknown;
 }
 
+export const TITLE_MAX = 60;
 export const ATTENDEES_MAX = 60;
 
 export function attendeeLabel(a: CalcomAttendee): string {
   return a.name || a.email || "unknown";
 }
 
-/** One table row per booking: id, when, how long, who. */
-export function bookingRow(b: CalcomBooking): Record<string, unknown> {
+/**
+ * One table row per booking. Five columns (AXI principle 2 asks for 3-4):
+ * `status` stays because an unfiltered `bookings` list mixes accepted,
+ * pending, and cancelled rows and the agent must tell them apart; duration
+ * and links live in `booking <uid>`. Long titles and attendee lists are
+ * shortened with a size hint unless the caller passed --full.
+ */
+export function bookingRow(
+  b: CalcomBooking,
+  t: Truncator = new Truncator(),
+): Record<string, unknown> {
   return {
     uid: b.uid,
     start: compactIso(b.start),
-    mins: b.duration ?? "",
     status: b.status ?? "",
-    title: truncate(b.title ?? "", 60),
-    attendees: truncate(
+    title: t.cut(b.title ?? "", TITLE_MAX),
+    attendees: t.cut(
       (b.attendees ?? []).map(attendeeLabel).join("; "),
       ATTENDEES_MAX,
     ),
   };
 }
 
-export const BOOKING_COLUMNS = "uid,start,mins,status,title,attendees";
+export const BOOKING_COLUMNS = "uid,start,status,title,attendees";

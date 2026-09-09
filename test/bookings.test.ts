@@ -56,16 +56,40 @@ describe("renderBookings", () => {
   it("renders one row per booking with compact times and attendee labels", () => {
     const out = renderBookings(fixture, { status: "upcoming", limit: 20 });
     expect(out).toContain("count: 2 bookings (status: upcoming)");
+    expect(out).toContain("bookings[2]{uid,start,status,title,attendees}:");
     expect(out).toContain(
-      "bookings[2]{uid,start,mins,status,title,attendees}:",
+      'abc123XYZ,"2026-09-15T02:00Z",accepted,30 min between Jane Doe and Bob,Bob',
     );
     expect(out).toContain(
-      'abc123XYZ,"2026-09-15T02:00Z",30,accepted,30 min between Jane Doe and Bob,Bob',
-    );
-    expect(out).toContain(
-      'def456,"2026-09-16T09:00Z",15,pending,Intro call,carol@example.com; Dan',
+      'def456,"2026-09-16T09:00Z",pending,Intro call,carol@example.com; Dan',
     );
     expect(out).toContain("calcom-axi booking <uid>");
+  });
+
+  it("shortens long titles with a size hint and offers --full once", () => {
+    const long = {
+      ...fixture[1],
+      title: "T".repeat(90),
+      attendees: [{ name: "A".repeat(80) }],
+    };
+    const out = renderBookings([long], { limit: 20 });
+    expect(out).toContain(`${"T".repeat(60)}… (90 chars)`);
+    expect(out).toContain(`${"A".repeat(60)}… (80 chars)`);
+    expect(out).toContain(
+      "2 values shortened; run `calcom-axi bookings --full`",
+    );
+    expect(out.match(/--full/g)?.length).toBe(1);
+  });
+
+  it("shows complete text under --full and drops the hint", () => {
+    const long = { ...fixture[1], title: "T".repeat(90) };
+    const out = renderBookings([long], { limit: 20, full: true });
+    expect(out).toContain("T".repeat(90));
+    expect(out).not.toContain("shortened");
+  });
+
+  it("never mentions --full when nothing was cut", () => {
+    expect(renderBookings(fixture, { limit: 20 })).not.toContain("--full");
   });
 
   it("offers the next page when the page is full", () => {
@@ -128,6 +152,13 @@ describe("takeBookingsFilter / bookingsArgs", () => {
     expect(bookingsArgs(takeBookingsFilter([]))).toContain("desc");
   });
 
+  it("takes --full out of args", () => {
+    const args = ["--full", "--status", "past"];
+    expect(takeBookingsFilter(args).full).toBe(true);
+    expect(args).toEqual([]);
+    expect(takeBookingsFilter([]).full).toBe(false);
+  });
+
   it("rejects a bad status, date, id, or skip by name", () => {
     expect(codeOf(() => takeBookingsFilter(["--status", "done"]))).toBe(
       "VALIDATION_ERROR",
@@ -153,6 +184,13 @@ describe("renderAgenda", () => {
 
   it("nudges toward --limit when the page is full", () => {
     expect(renderAgenda(fixture, 2)).toContain("raise `--limit`");
+  });
+
+  it("honours --full for the agenda too", () => {
+    const long = [{ ...fixture[0], title: "Q".repeat(70) }];
+    expect(renderAgenda(long, 10)).toContain("… (70 chars)");
+    expect(renderAgenda(long, 10)).toContain("calcom-axi agenda --full");
+    expect(renderAgenda(long, 10, true)).toContain("Q".repeat(70));
   });
 
   it("renders an explicit empty state", () => {

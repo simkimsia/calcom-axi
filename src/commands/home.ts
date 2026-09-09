@@ -5,6 +5,7 @@ import {
   renderHelp,
   renderList,
   renderOutput,
+  Truncator,
 } from "../toon.js";
 import { fetchAgenda } from "./agenda.js";
 import { fetchProfile } from "./whoami.js";
@@ -28,10 +29,15 @@ export async function homeCommand(): Promise<string> {
   if (agenda.length === 0) {
     blocks.push("agenda: 0 upcoming bookings");
   } else {
+    const t = new Truncator();
     blocks.push(
       `next: ${relativeTime(agenda[0].start)}`,
-      renderList("bookings", agenda.map(bookingRow)),
+      renderList(
+        "bookings",
+        agenda.map((b) => bookingRow(b, t)),
+      ),
     );
+    hints.push(...t.hint("agenda"));
     hints.push(
       `Run \`calcom-axi agenda\` for more than the next ${HOME_AGENDA_LIMIT}`,
     );

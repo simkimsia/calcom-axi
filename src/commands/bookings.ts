@@ -1,8 +1,8 @@
-import { assertNoArgs, takeFlag, takeIntFlag } from "../args.js";
+import { assertNoArgs, takeBoolFlag, takeFlag, takeIntFlag } from "../args.js";
 import { BOOKING_COLUMNS, bookingRow, type CalcomBooking } from "../booking.js";
 import { calcomJson } from "../calcom.js";
 import { AxiError } from "../errors.js";
-import { renderHelp, renderList, renderOutput } from "../toon.js";
+import { renderHelp, renderList, renderOutput, Truncator } from "../toon.js";
 
 export const BOOKINGS_LIMIT_DEFAULT = 20;
 export const BOOKINGS_LIMIT_MAX = 100;
@@ -17,13 +17,14 @@ export type BookingStatus = (typeof BOOKING_STATUSES)[number];
 
 export const BOOKINGS_HELP = `usage: calcom-axi bookings [flags]
 Lists bookings (${BOOKING_COLUMNS}); all statuses unless filtered.
-flags[6]:
+flags[7]:
   --status <s>            one of ${BOOKING_STATUSES.join(", ")}
   --after <iso>           only bookings starting after this ISO 8601 time
   --before <iso>          only bookings ending before this ISO 8601 time
   --attendee-email <e>    only bookings with this attendee
   --event-type-id <id>    only bookings of this event type
   --limit <n>             rows to return (default ${BOOKINGS_LIMIT_DEFAULT}, max ${BOOKINGS_LIMIT_MAX}); --skip <n> to page
+  --full                  show complete titles and attendee lists instead of shortened ones
 examples:
   calcom-axi bookings
   calcom-axi bookings --status unconfirmed
@@ -39,6 +40,7 @@ export interface BookingsFilter {
   eventTypeId?: string;
   limit: number;
   skip?: number;
+  full?: boolean;
 }
 
 export function takeBookingsFilter(args: string[]): BookingsFilter {
@@ -99,6 +101,7 @@ export function takeBookingsFilter(args: string[]): BookingsFilter {
     eventTypeId,
     limit,
     skip,
+    full: takeBoolFlag(args, "--full"),
   };
 }
 
@@ -146,8 +149,11 @@ export function renderBookings(
       ]),
     ]);
   }
+  const t = new Truncator(f.full);
+  const rows = bookings.map((b) => bookingRow(b, t));
   const hints = [
-    "Run `calcom-axi booking <uid>` for attendees, location, and meeting link",
+    ...t.hint("bookings"),
+    "Run `calcom-axi booking <uid>` for duration, location, meeting link, and hosts",
   ];
   if (bookings.length >= f.limit) {
     hints.unshift(
@@ -156,7 +162,7 @@ export function renderBookings(
   }
   return renderOutput([
     `count: ${bookings.length} bookings${where}`,
-    renderList("bookings", bookings.map(bookingRow)),
+    renderList("bookings", rows),
     renderHelp(hints),
   ]);
 }

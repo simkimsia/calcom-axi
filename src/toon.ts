@@ -55,8 +55,36 @@ export function relativeTime(iso: string | null | undefined): string {
   return wrap(`${Math.floor(mon / 12)}y`);
 }
 
-/** Collapse to one line and cap length so a long field cannot flood a table. */
+/**
+ * Size-aware truncation (AXI principle 3). Collapses newlines, and when a
+ * value exceeds `max` keeps the head plus a size hint ("… (312 chars)") so
+ * the agent knows what it is missing. `full` disables the cap. Use one
+ * Truncator per render so the renderer can add a single `--full` hint when
+ * anything was actually cut, instead of repeating it per cell.
+ */
+export class Truncator {
+  /** Number of values that were cut in this render. */
+  count = 0;
+
+  constructor(private readonly full = false) {}
+
+  cut(text: string, max: number): string {
+    const oneLine = text.replace(/\s*\n\s*/g, " ⏎ ");
+    if (this.full || oneLine.length <= max) return oneLine;
+    this.count++;
+    return `${oneLine.slice(0, max)}… (${oneLine.length} chars)`;
+  }
+
+  /** Help line to append when something was cut; empty otherwise. */
+  hint(command: string): string[] {
+    if (this.count === 0) return [];
+    return [
+      `${this.count} value${this.count === 1 ? "" : "s"} shortened; run \`calcom-axi ${command} --full\` for complete text`,
+    ];
+  }
+}
+
+/** One-off truncation for callers without a --full flag (size hint only). */
 export function truncate(text: string, max: number): string {
-  const oneLine = text.replace(/\s*\n\s*/g, " ⏎ ");
-  return oneLine.length > max ? `${oneLine.slice(0, max - 1)}…` : oneLine;
+  return new Truncator().cut(text, max);
 }

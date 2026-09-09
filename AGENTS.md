@@ -32,7 +32,12 @@ AXI principles (the `axi` skill in the upstream `kunchenguid/axi` repo).
   helpers, then `assertNoArgs` rejects whatever is left by name with exit
   code 2 before any calcom call (AXI §6). A flag is never accepted silently.
 - `src/booking.ts` — the booking row shape shared by `agenda`, `bookings`,
-  and the dashboard, so all three tables have identical columns.
+  and the dashboard, so all three tables have identical columns (five, with
+  the rationale for the fifth in the doc comment).
+- `src/toon.ts` `Truncator` — AXI principle 3: every shortened value carries
+  its original size, and a renderer emits one `--full` hint only when it
+  actually cut something. List commands take `--full`; the dashboard has no
+  flags and points at `agenda --full` instead.
 - Commands live in `src/commands/`, return TOON strings via `src/toon.ts`
   helpers; errors render through the `formatError` hook in `src/cli.ts`
   because the SDK's default formatter only recognizes its own AxiError class.

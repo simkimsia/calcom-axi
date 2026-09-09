@@ -37,12 +37,12 @@ and run the build step again.
 ```sh
 calcom-axi                 # dashboard: who you are + your next 3 bookings
 calcom-axi whoami          # logged-in Cal.com account
-calcom-axi agenda          [--limit 10]                       # upcoming bookings, soonest first
+calcom-axi agenda          [--limit 10] [--full]              # upcoming bookings, soonest first
 calcom-axi bookings        [--status upcoming|past|cancelled|recurring|unconfirmed]
                            [--after <iso>] [--before <iso>] [--attendee-email <e>]
-                           [--event-type-id <id>] [--limit 20] [--skip <n>]
+                           [--event-type-id <id>] [--limit 20] [--skip <n>] [--full]
 calcom-axi booking <uid>   # one booking in full: hosts, attendees, meeting link
-calcom-axi event-types     [--username <u>]                   # what people can book
+calcom-axi event-types     [--username <u>] [--full]          # what people can book
 calcom-axi schedules       # availability schedules with an hours summary
 calcom-axi slots           --start <date> --end <date> (--event-type-id <id> | --event-type-slug <s> --username <u>)
                            [--timezone <tz>] [--duration <mins>] [--limit 50]
@@ -55,15 +55,18 @@ Example output (TOON):
 
 ```
 count: 2 upcoming bookings (next in 5d)
-bookings[2]{uid,start,mins,status,title,attendees}:
-  abc123XYZ,"2026-09-15T02:00Z",30,accepted,30 min between Jane Doe and Bob,Bob
-  def456,"2026-09-16T09:00Z",15,pending,Intro call,carol@example.com; Dan
+bookings[2]{uid,start,status,title,attendees}:
+  abc123XYZ,"2026-09-15T02:00Z",accepted,30 min between Jane Doe and Bob,Bob
+  def456,"2026-09-16T09:00Z",pending,Intro call,carol@example.com; Dan
 help[1]:
-  Run `calcom-axi booking <uid>` for attendees, location, and meeting link
+  Run `calcom-axi booking <uid>` for duration, location, meeting link, and hosts
 ```
 
-Every command fetches a bounded page and exits. Times are ISO 8601 in UTC
-trimmed to the minute, unless `slots --timezone` asks for local times. Bad
+Every command fetches a bounded page and exits. List rows keep to five
+short columns; long titles and attendee lists are shortened with a size
+hint (`… (312 chars)`) and one `--full` hint, and `--full` shows them whole.
+Times are ISO 8601 in UTC trimmed to the minute, unless `slots --timezone`
+asks for local times. Bad
 flags fail before any network call with exit code 2 and the accepted flags
 listed; missing credentials come back as a structured `AUTH` error with the
 exact login command.
