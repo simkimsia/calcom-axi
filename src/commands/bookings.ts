@@ -52,6 +52,7 @@ export function takeBookingsFilter(args: string[]): BookingsFilter {
     throw new AxiError(
       `--status must be one of ${BOOKING_STATUSES.join(", ")}, got ${status}`,
       "VALIDATION_ERROR",
+      [`Example: \`--status ${BOOKING_STATUSES[0]}\``],
     );
   }
   const after = takeFlag(args, "--after");
@@ -89,6 +90,7 @@ export function takeBookingsFilter(args: string[]): BookingsFilter {
       throw new AxiError(
         `--skip must be a non-negative integer, got ${skipRaw}`,
         "VALIDATION_ERROR",
+        ["Example: `--skip 20` for the second page"],
       );
     }
     skip = Number(skipRaw);

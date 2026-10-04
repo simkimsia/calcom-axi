@@ -84,6 +84,7 @@ export function takeSlotsQuery(args: string[]): SlotsQuery {
     throw new AxiError(
       "Pass either --event-type-id or --event-type-slug, not both",
       "VALIDATION_ERROR",
+      ["Drop one of the two flags; --event-type-id alone is enough"],
     );
   }
   if (!eventTypeId && !eventTypeSlug) {
@@ -97,12 +98,16 @@ export function takeSlotsQuery(args: string[]): SlotsQuery {
     throw new AxiError(
       "--event-type-slug needs --username to identify whose event type it is",
       "VALIDATION_ERROR",
+      [
+        "Add `--username <u>`, or use `--event-type-id` from `calcom-axi event-types`",
+      ],
     );
   }
   if (duration && !/^\d+$/.test(duration)) {
     throw new AxiError(
       `--duration must be a number of minutes, got ${duration}`,
       "VALIDATION_ERROR",
+      ["Example: `--duration 30`"],
     );
   }
   return {
