@@ -68,8 +68,9 @@ AXI principles (the `axi` skill in the upstream `kunchenguid/axi` repo).
 - pnpm, Node >= 20, ES modules, TypeScript Node16 resolution
   (import specifiers end in `.js`), Vitest tests in `test/` that never call
   the network: fixtures mirror real `calcom ... --json` shapes, scrubbed.
-- Conventional commit messages (`feat:`, `fix:`, `docs:`) with an eye toward
-  release-please later.
+- Conventional commit messages (`feat:`, `fix:`, `docs:`). Releases are cut
+  by release-please from these commits and published to npm by trusted
+  publishing (GitHub OIDC, no token).
 
 ## Maintaining this file
 
