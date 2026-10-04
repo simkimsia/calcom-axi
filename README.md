@@ -20,17 +20,22 @@ Early scaffold (v0). Read-only commands only.
 
 ## Install
 
-Not on npm yet, so `npx -y @simkimsia/calcom-axi` does not work. Install from a clone:
+```sh
+pnpm add -g @simkimsia/calcom-axi
+```
+
+Or run it without installing: `npx -y @simkimsia/calcom-axi --help`.
+
+Check it: `calcom-axi --version`. Update later with `calcom-axi update`.
+
+To work on it from a clone:
 
 ```sh
 git clone https://github.com/simkimsia/calcom-axi
-pnpm --prefix calcom-axi install
-pnpm --prefix calcom-axi run build
-pnpm --prefix calcom-axi link --global   # puts `calcom-axi` on PATH
+pnpm -C calcom-axi install
+pnpm -C calcom-axi run build
+pnpm add -g link:$PWD/calcom-axi   # puts `calcom-axi` on PATH
 ```
-
-Check it: `calcom-axi --version`. To update later, `git pull` in the clone
-and run the build step again.
 
 ## Usage
 
