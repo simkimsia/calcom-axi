@@ -95,6 +95,9 @@ export function mapCalcomError(stderr: string, exitCode: number): AxiError {
   return new AxiError(
     firstLine(trimmed) || `calcom exited with code ${exitCode}`,
     "UNKNOWN",
+    [
+      "Rerun the same command with plain `calcom` to see its full output, then report the gap at https://github.com/simkimsia/calcom-axi/issues",
+    ],
   );
 }
 

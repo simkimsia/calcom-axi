@@ -62,6 +62,13 @@ describe("mapCalcomError", () => {
     expect(err.message).toBe("Something exploded");
   });
 
+  it("gives the UNKNOWN fallback one next step", () => {
+    const err = mapCalcomError("Error: Something exploded", 1);
+    expect(err.suggestions).toEqual([
+      "Rerun the same command with plain `calcom` to see its full output, then report the gap at https://github.com/simkimsia/calcom-axi/issues",
+    ]);
+  });
+
   it("reports the exit code when stderr is empty", () => {
     expect(mapCalcomError("", 3).message).toBe("calcom exited with code 3");
   });
