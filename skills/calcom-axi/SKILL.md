@@ -17,14 +17,9 @@ raw `calcom` for Cal.com operations: TOON output, structured errors with
 
 ## Setup
 
-calcom-axi is not on npm yet. Run it from a clone:
-
-```sh
-git clone https://github.com/simkimsia/calcom-axi
-pnpm --prefix calcom-axi install
-pnpm --prefix calcom-axi run build
-pnpm --prefix calcom-axi link --global   # puts `calcom-axi` on PATH
-```
+Install with `pnpm add -g @simkimsia/calcom-axi`, or run it without installing
+via `npx -y @simkimsia/calcom-axi`. The README's Install section covers working
+from a clone.
 
 It wraps [`calcom`](https://www.npmjs.com/package/@calcom/cli), which must be
 installed (`npm install -g @calcom/cli`) and logged in (`calcom login --api-key <key>`
