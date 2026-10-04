@@ -64,11 +64,14 @@ export function takeSlotsQuery(args: string[]): SlotsQuery {
       throw new AxiError(
         `${flag} must be an ISO 8601 date, got ${value}`,
         "VALIDATION_ERROR",
+        ["Example: `--start 2026-09-15 --end 2026-09-19`"],
       );
     }
   }
   if (new Date(end).getTime() <= new Date(start).getTime()) {
-    throw new AxiError("--end must be after --start", "VALIDATION_ERROR");
+    throw new AxiError("--end must be after --start", "VALIDATION_ERROR", [
+      "Swap the two dates, or move --end later",
+    ]);
   }
   if (eventTypeId && !/^\d+$/.test(eventTypeId)) {
     throw new AxiError(
