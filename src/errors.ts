@@ -18,7 +18,7 @@ export class AxiError extends Error {
   }
 }
 
-export function exitCodeForError(error: AxiError): number {
+export function exitCodeForError(error: { code: string }): number {
   return error.code === "VALIDATION_ERROR" ? 2 : 1;
 }
 
@@ -95,9 +95,7 @@ export function mapCalcomError(stderr: string, exitCode: number): AxiError {
   return new AxiError(
     firstLine(trimmed) || `calcom exited with code ${exitCode}`,
     "UNKNOWN",
-    [
-      "Rerun the same command with plain `calcom` to see its full output, then report the gap at https://github.com/simkimsia/calcom-axi/issues",
-    ],
+    [UNKNOWN_SUGGESTION],
   );
 }
 
@@ -105,3 +103,6 @@ function firstLine(text: string): string {
   // The CLI prefixes API failures with "Error: " (chalk-free on a pipe).
   return (text.split("\n", 1)[0] ?? "").replace(/^Error:\s*/, "");
 }
+
+export const UNKNOWN_SUGGESTION =
+  "Rerun the same command with plain `calcom` to see its full output, then report the gap at https://github.com/simkimsia/calcom-axi/issues";
