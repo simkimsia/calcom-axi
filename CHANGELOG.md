@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/simkimsia/calcom-axi/compare/calcom-axi-v0.1.1...calcom-axi-v0.1.2) (2026-10-07)
+
+
+### Features
+
+* AXI_DEBUG=1 prints the forwarded calcom argv to stderr ([9c1d55c](https://github.com/simkimsia/calcom-axi/commit/9c1d55cd66b94625a69ba8938c3055520f49c995)), closes [#13](https://github.com/simkimsia/calcom-axi/issues/13)
+
 ## [0.1.1](https://github.com/simkimsia/calcom-axi/compare/calcom-axi-v0.1.0...calcom-axi-v0.1.1) (2026-10-04)
 
 
