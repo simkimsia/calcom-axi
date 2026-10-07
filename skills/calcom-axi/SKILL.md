@@ -47,6 +47,8 @@ date range). List commands shorten long titles with a size hint; pass
 ## When calcom-axi cannot do it
 
 1. Try `calcom-axi <command>` first and read the structured error.
+   `AXI_DEBUG=1 calcom-axi <command>` prints the exact `calcom` command it
+   ran to stderr; rerun that line to see whether `calcom` itself fails.
 2. If the error is `VALIDATION_ERROR` with `Unknown command`, or the command
    exists but lacks the flag you need, fall back to raw `calcom` and finish
    the user's task. Examples: `calcom calendars list`, `calcom webhooks list`,
@@ -73,6 +75,12 @@ date range). List commands shorten long titles with a size hint; pass
 
    ## What worked instead
    `calcom <exact command>`
+
+   ## Plain CLI result, with the exact argv the axi forwarded (AXI_DEBUG=1)
+   works, same failure, or n/a
+
+   ## If same failure
+   Should the axi shape the arguments, map the error, or document the limit?
 
    ## What the agent needed from the output
    <fields / shape, e.g. "webhook id, subscriberUrl, triggers as a TOON table">

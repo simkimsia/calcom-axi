@@ -9,7 +9,42 @@ export interface ExecResult {
 
 const MAX_BUFFER_BYTES = 10 * 1024 * 1024; // 10 MB
 
+/** Flags whose next value is a credential, masked in debug output. */
+const SECRET_FLAGS = new Set(["--api-key"]);
+
+/** Single-quote an argument for a copy-pasteable shell line, only when needed. */
+function shellQuote(arg: string): string {
+  if (/^[A-Za-z0-9_\-./:=@%+,]+$/.test(arg)) return arg;
+  return `'${arg.replace(/'/g, `'\\''`)}'`;
+}
+
+/**
+ * The exact `calcom` command line calcom-axi is about to run, shell-quoted,
+ * with credential values masked. Triage compares a plain-CLI repro against
+ * this line, not against a command retyped by hand.
+ */
+export function debugLine(args: string[]): string {
+  const masked = args.map((arg, i) => {
+    if (i > 0 && SECRET_FLAGS.has(args[i - 1])) return "<redacted>";
+    const eq = arg.indexOf("=");
+    if (eq > 0 && SECRET_FLAGS.has(arg.slice(0, eq))) {
+      return `${arg.slice(0, eq)}=<redacted>`;
+    }
+    return arg;
+  });
+  return `[axi-debug] ${["calcom", ...masked].map(shellQuote).join(" ")}`;
+}
+
+/** With `AXI_DEBUG=1`, print the forwarded argv to stderr; stdout stays TOON. */
+export function logDebugArgv(
+  args: string[],
+  env: NodeJS.ProcessEnv = process.env,
+): void {
+  if (env.AXI_DEBUG === "1") process.stderr.write(`${debugLine(args)}\n`);
+}
+
 function run(args: string[]): Promise<ExecResult> {
+  logDebugArgv(args);
   return new Promise((resolve) => {
     execFile(
       "calcom",

@@ -76,6 +76,10 @@ flags fail before any network call with exit code 2 and the accepted flags
 listed; missing credentials come back as a structured `AUTH` error with the
 exact login command.
 
+Set `AXI_DEBUG=1` to print each `calcom` command line calcom-axi runs to
+stderr (shell-quoted, credentials masked). stdout is unchanged. Use it to
+check whether a failure comes from calcom-axi or from `calcom` itself.
+
 ## Agent skill
 
 Install the bundled skill so your coding agent prefers `calcom-axi` over raw
