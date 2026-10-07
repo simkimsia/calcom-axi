@@ -22,7 +22,9 @@ AXI principles (the `axi` skill in the upstream `kunchenguid/axi` repo).
   (`calcomJson`, which always appends `--json`). Non-zero exits route through
   `mapCalcomError`; a missing binary maps to `CALCOM_NOT_INSTALLED`.
   `parseCalcomJson` treats the CLI's literal `undefined` output as an empty
-  result (see the comment there).
+  result (see the comment there). `AXI_DEBUG=1` makes `run` print each
+  forwarded argv to stderr via `debugLine` (shell-quoted, `--api-key` values
+  masked), the axi-playbook convention for triaging inherited gaps.
 - `src/errors.ts` — `mapCalcomError` walks `patterns` in order and returns on
   the first regex hit, so order is the contract: narrow patterns before broad
   ones (same rule as gh-axi's `mapGhError`). Every pattern is backed by a
